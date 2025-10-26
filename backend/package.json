@@ -2,11 +2,11 @@
   "name": "e-commerce--1",
   "version": "1.0.0",
   "description": "Bakckend for full-stack eCommerce project",
-  "main": "server.js",
+  "main": "src/server.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon /server.js",
-    "seed": "node backend/src/seed/seedAll.js"
+    "dev": "nodemon src/server.js",
+    "seed": "node/src/seed/seedAll.js"
   },
   "repository": {
     "type": "git",
