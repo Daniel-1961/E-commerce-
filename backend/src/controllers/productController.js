@@ -1,9 +1,9 @@
 import { Product, Category, ProductImage } from "../models/index.js";
-import productImage from "../models/productImage.js";
+//import productImage from "../models/productImage.js";
 
 export const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.findAll({ include: [Category, productImage] });
+    const products = await Product.findAll({ include: [Category, ProductImage] });
     res.json(products);
   } catch (error) {
     console.error("Error fetching products:", error);
@@ -13,7 +13,7 @@ export const getAllProducts = async (req, res) => {
 
 export const getProductById = async (req, res) => {
   try {
-    const product = await Product.findByPk(req.params.id, { include: [Category, productImage] });
+    const product = await Product.findByPk(req.params.id, { include: [Category, ProductImage] });
     if (!product) return res.status(404).json({ message: "Product not found" });
     res.json(product);
   } catch (error) {

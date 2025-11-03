@@ -1,5 +1,5 @@
 import { ProductImage, Product } from "../models/index.js";
-import ProductImage from "../models/productImage.js";
+//import ProductImage from "../models/productImage.js";
 
 export const getAllImages = async (req, res) => {
   try {
