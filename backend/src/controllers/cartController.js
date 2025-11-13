@@ -17,7 +17,7 @@ export const getUserCart = async (req, res) => {
 };
 
 // Add an item to the cart
-export const addToCart = async (req, res) => {
+export const addToCart = async (req, res) => {cd 
   const { productId, quantity } = req.body;
 
   try {
