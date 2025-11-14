@@ -5,10 +5,10 @@ import { Order, OrderItem, Cart, CartItem, Product } from "../models/index.js";
 export const createOrder = async (req, res) => {
   try {
     const userId = req.user.id; // ✅ Extracted from auth middleware (JWT)
-    
+
     // 1️⃣ Find user's cart
     const cart = await Cart.findOne({
-      where: { userId },
+      where: { user_id: userId },
       include: [{ model: CartItem, include: [Product] }],
     });
 
@@ -72,7 +72,7 @@ export const getAllOrders = async (req, res) => {
 export const getUserOrders = async (req, res) => {
   try {
     const orders = await Order.findAll({
-      where: { userId: req.user.id },
+      where: { user_id: req.user.id },
       include: [{ model: OrderItem, include: [Product] }],
     });
     res.json(orders);

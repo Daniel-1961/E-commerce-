@@ -21,7 +21,7 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/images", imageRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/carts",cartRoutes);
+app.use("/api/carts", cartRoutes);
 app.use("/api/orders", orderRoutes);
 testConnection()
 

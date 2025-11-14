@@ -7,13 +7,23 @@ import {
   updateUser,
   deleteUser,
 } from "../controllers/userController.js";
+import { protect, adminOnly, ownerOrAdmin } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/", getAllUsers);
-router.get("/:id", getUserById);
+// List users - admin only
+router.get("/", protect, adminOnly, getAllUsers);
+
+// Get a single user - owner or admin
+router.get("/:id", protect, ownerOrAdmin, getUserById);
+
+// Create user (signup) - public
 router.post("/", createUser);
-router.put("/:id", updateUser);
-router.delete("/:id", deleteUser);
+
+// Update user - owner or admin
+router.put("/:id", protect, ownerOrAdmin, updateUser);
+
+// Delete user - admin only
+router.delete("/:id", protect, adminOnly, deleteUser);
 
 export default router;
