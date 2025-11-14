@@ -17,10 +17,19 @@ export const getUserCart = async (req, res) => {
 };
 
 // Add an item to the cart
-export const addToCart = async (req, res) => {cd 
+export const addToCart = async (req, res) => {
   const { productId, quantity } = req.body;
 
+  // sanitize quantity
+  const qty = Number.isInteger(Number(quantity)) && Number(quantity) > 0 ? Number(quantity) : 1;
+
   try {
+    // Ensure product exists to avoid FK constraint errors
+    const product = await Product.findByPk(productId);
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
     let cart = await Cart.findOne({ where: { user_id: req.user.id } });
     if (!cart) {
       cart = await Cart.create({ user_id: req.user.id });
@@ -29,10 +38,10 @@ export const addToCart = async (req, res) => {cd
     let item = await CartItem.findOne({ where: { cart_id: cart.id, product_id: productId } });
 
     if (item) {
-      item.quantity += quantity;
+      item.quantity = (Number(item.quantity) || 0) + qty;
       await item.save();
     } else {
-      await CartItem.create({ cartId: cart.id, productId, quantity });
+      await CartItem.create({ cart_id: cart.id, product_id: productId, quantity: qty });
     }
 
     res.status(201).json({ message: 'Item added to cart' });
@@ -66,3 +75,4 @@ export const removeFromCart = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+

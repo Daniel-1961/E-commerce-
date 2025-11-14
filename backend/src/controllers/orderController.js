@@ -22,19 +22,19 @@ export const createOrder = async (req, res) => {
       0
     );
 
-    // 3️⃣ Create order
+    // 3️⃣ Create order (use snake_case foreign key names)
     const newOrder = await Order.create({
-      userId,
-      totalAmount,
-      status: "pending", // default
+      user_id: userId,
+      total: totalAmount,
+      status: "pending",
     });
 
-    // 4️⃣ Create order items
+    // 4️⃣ Create order items (use underscored keys)
     const orderItems = await Promise.all(
       cart.CartItems.map(async (item) => {
         return await OrderItem.create({
-          orderId: newOrder.id,
-          productId: item.productId,
+          order_id: newOrder.id,
+          product_id: item.product_id || item.productId,
           quantity: item.quantity,
           price: item.Product.price,
         });
@@ -42,7 +42,7 @@ export const createOrder = async (req, res) => {
     );
 
     // 5️⃣ Clear the cart
-    await CartItem.destroy({ where: { cartId: cart.id } });
+    await CartItem.destroy({ where: { cart_id: cart.id } });
 
     res.status(201).json({
       message: "Order placed successfully!",

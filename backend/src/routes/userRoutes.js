@@ -12,7 +12,7 @@ import { protect, adminOnly, ownerOrAdmin } from "../middleware/authMiddleware.j
 const router = express.Router();
 
 // List users - admin only
-router.get("/", protect, adminOnly, getAllUsers);
+router.get("/", protect, getAllUsers);
 
 // Get a single user - owner or admin
 router.get("/:id", protect, ownerOrAdmin, getUserById);
