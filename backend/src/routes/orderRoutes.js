@@ -14,4 +14,4 @@ router.get("/", protect, adminOnly, getAllOrders); // Admin view all
 router.get("/my-orders", protect, getUserOrders); // User view own
 router.patch("/:id/status", protect, adminOnly, updateOrderStatus);
 
-export default router;
+export default router; 
