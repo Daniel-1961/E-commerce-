@@ -1,53 +1,55 @@
-import bcrypt from 'bcrypt';
-import {User, Address} from "../models/index.js";
-import { generateToken } from '../../utils/token.js';
-//register
-export const registerUser=async(req,res)=>{
-    try{
-        const{name,email,password,phone,address}=req.body;
-        //check if the user exist
-        const existingUser=await User.findOne({where:{email}});
-        if(existingUser){
-            return res.status(400).json({message:"Email already registered"});
-        }
-        
-            const hashedPassword=await bcrypt.hash(password,10);
-            //creating new user
-            const newUser=await User.create({
-                name,
-                email,
-                password:hashedPassword,
-                phone
-            });
-            // add optional address
-            if(address){
-                await Address.create({
-                    userId:newUser.id,
-                    ...address
-                });
-                const token=generateToken(newUser.id);
-              res.status(201).json({message:"Registration successful",token});
-             }
-        }catch(error){
-                console.error("Registration error:",error);
-                res.status(500).json({message:"Server Error"})
-            
-        }
-    }
-    //LOGIN
-    export const loginUser=async(req,res)=>{
-        try{
-            const {email,password}=req.body;
-            //Find User
-            const user=await User.findOne({where:{email}});
-            if(!user) return res.status(404).json({message:"User not found"})
-            const isMatch=await bcrypt.compare(password,user.password)  
-            if(!isMatch) return res.status(401).json({message:"invalid credentials"});
-            const token=generateToken(user.id);
-            res.json({message:"Login successful",token});
+// src/controllers/authController.js
+import bcrypt from "bcrypt";
+import { User, Address } from "../models/index.js";
+import { generateToken } from "../../utils/token.js";
+import { asyncHandler } from "../middleware/errorMiddleware.js";
+import { registerSchema, loginSchema } from "../validators/authValidator.js";
 
-        }catch(error){
-            console.log("Login Error",error);
-            res.status(500).json({message:"Server error"});
-        }
-    };
+// Register
+export const registerUser = asyncHandler(async (req, res) => {
+  const { error, value } = registerSchema.validate(req.body);
+  if (error) return res.status(400).json({ success: false, message: error.message });
+
+  const { name, email, password } = value;
+
+  const exist = await User.findOne({ where: { email } });
+  if (exist) return res.status(400).json({ success: false, message: "Email already registered" });
+
+  const hashed = await bcrypt.hash(password, 10);
+  const user = await User.create({ name, email, password: hashed, role: "customer" });
+
+  // Option: create empty cart or default address elsewhere
+
+  const token = generateToken({ id: user.id, role: user.role });
+
+  // Exclude password in response
+  const safeUser = user.toJSON();
+  delete safeUser.password;
+
+  res.status(201).json({ success: true, message: "User created", data: { user: safeUser, token } });
+});
+
+// Login
+export const loginUser = asyncHandler(async (req, res) => {
+  const { error, value } = loginSchema.validate(req.body);
+  if (error) return res.status(400).json({ success: false, message: error.message });
+
+  const { email, password } = value;
+  const user = await User.findOne({ where: { email } });
+  if (!user) return res.status(401).json({ success: false, message: "Invalid credentials" });
+
+  const match = await bcrypt.compare(password, user.password);
+  if (!match) return res.status(401).json({ success: false, message: "Invalid credentials" });
+
+  const token = generateToken({ id: user.id, role: user.role });
+  const safeUser = user.toJSON();
+  delete safeUser.password;
+
+  res.json({ success: true, message: "Login successful", data: { user: safeUser, token } });
+});
+
+export const getMe = asyncHandler(async (req, res) => {
+  const user = req.user;
+  const addresses = await Address.findAll({ where: { user_id: user.id } });
+  res.json({ success: true, data: { user, addresses } });
+});

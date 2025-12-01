@@ -1,59 +1,58 @@
-// controllers/userController.js
-import { User } from "../models/index.js";
+// src/controllers/userController.js
+import bcrypt from "bcrypt";
+import { User, Address } from "../models/index.js";
+import { asyncHandler } from "../middleware/errorMiddleware.js";
+import { updateProfileSchema, addressSchema } from "../validators/userValidator.js";
 
-export const getAllUsers = async (req, res) => {
-  try {
-    const users = await User.findAll();
-    res.json(users);
-  } catch (error) {
-    console.error("Error fetching users:", error);
-    res.status(500).json({ message: "Server error" });
+// Update profile (PUT /api/users/me)
+export const updateProfile = asyncHandler(async (req, res) => {
+  const { error, value } = updateProfileSchema.validate(req.body);
+  if (error) return res.status(400).json({ success: false, message: error.message });
+
+  const user = await User.findByPk(req.user.id);
+  if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+  // If updating password
+  if (req.body.password) {
+    if (typeof req.body.password !== "string" || req.body.password.length < 6) {
+      return res.status(400).json({ success: false, message: "Password must be >= 6 chars" });
+    }
+    user.password = await bcrypt.hash(req.body.password, 10);
   }
-};
+  // Update optional fields
+  if (value.name) user.name = value.name;
+  if (value.email) user.email = value.email;
 
-export const getUserById = async (req, res) => {
-  try {
-    const user = await User.findByPk(req.params.id);
-    if (!user) return res.status(404).json({ message: "User not found" });
-    res.json(user);
-  } catch (error) {
-    console.error("Error fetching user:", error);
-    res.status(500).json({ message: "Server error" });
+  await user.save();
+  const safeUser = user.toJSON();
+  delete safeUser.password;
+
+  res.json({ success: true, message: "Profile updated", data: safeUser });
+});
+
+// Addresses
+export const addAddress = asyncHandler(async (req, res) => {
+  const { error, value } = addressSchema.validate(req.body);
+  if (error) return res.status(400).json({ success: false, message: error.message });
+
+  const address = await Address.create({ user_id: req.user.id, ...value });
+  res.status(201).json({ success: true, message: "Address added", data: address });
+});
+
+export const listAddresses = asyncHandler(async (req, res) => {
+  const addresses = await Address.findAll({ where: { user_id: req.user.id } });
+  res.json({ success: true, data: addresses });
+});
+
+export const updateAddress = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const address = await Address.findByPk(id);
+  if (!address || address.user_id !== req.user.id) {
+    return res.status(404).json({ success: false, message: "Address not found" });
   }
-};
+  const { error, value } = addressSchema.validate(req.body);
+  if (error) return res.status(400).json({ success: false, message: error.message });
 
-export const createUser = async (req, res) => {
-  try {
-    const user = await User.create(req.body);
-    res.status(201).json(user);
-  } catch (error) {
-    console.error("Error creating user:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-};
-
-export const updateUser = async (req, res) => {
-  try {
-    const user = await User.findByPk(req.params.id);
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    await user.update(req.body);
-    res.json(user);
-  } catch (error) {
-    console.error("Error updating user:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-};
-
-export const deleteUser = async (req, res) => {
-  try {
-    const user = await User.findByPk(req.params.id);
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    await user.destroy();
-    res.json({ message: "User deleted successfully" });
-  } catch (error) {
-    console.error("Error deleting user:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-};
+  await address.update(value);
+  res.json({ success: true, message: "Address updated", data: address });
+});
