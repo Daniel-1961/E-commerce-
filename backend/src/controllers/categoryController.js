@@ -1,63 +1,52 @@
+// src/controllers/categoryController.js
 import { Category, Product } from "../models/index.js";
+import { asyncHandler } from "../middleware/errorMiddleware.js";
+import { createCategorySchema } from "../validators/productValidator.js";
 
-// Get all categories (with their products)
-export const getAllCategories = async (req, res) => {
-  try {
-    const categories = await Category.findAll({ include: Product });
-    res.json(categories);
-  } catch (error) {
-    console.error("Error fetching categories:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-};
+// Create category (admin)
+export const createCategory = asyncHandler(async (req, res) => {
+  const { error, value } = createCategorySchema.validate(req.body);
+  if (error) return res.status(400).json({ success: false, message: error.message });
+
+  const existing = await Category.findOne({ where: { name: value.name } });
+  if (existing) return res.status(400).json({ success: false, message: "Category already exists" });
+
+  const category = await Category.create(value);
+  res.status(201).json({ success: true, data: category });
+});
+
+// Get all categories (public)
+export const getCategories = asyncHandler(async (req, res) => {
+  const categories = await Category.findAll({
+    include: [{ model: Product, attributes: ["id"] }] // optional: number of products
+  });
+  res.json({ success: true, data: categories });
+});
 
 // Get single category
-export const getCategoryById = async (req, res) => {
-  try {
-    const category = await Category.findByPk(req.params.id, { include: Product });
-    if (!category) return res.status(404).json({ message: "Category not found" });
-    res.json(category);
-  } catch (error) {
-    console.error("Error fetching category:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-};
+export const getCategoryById = asyncHandler(async (req, res) => {
+  const category = await Category.findByPk(req.params.id, { include: Product });
+  if (!category) return res.status(404).json({ success: false, message: "Category not found" });
+  res.json({ success: true, data: category });
+});
 
-// Create category
-export const createCategory = async (req, res) => {
-  try {
-    const category = await Category.create(req.body);
-    res.status(201).json(category);
-  } catch (error) {
-    console.error("Error creating category:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-};
+// Update category (admin)
+export const updateCategory = asyncHandler(async (req, res) => {
+  const category = await Category.findByPk(req.params.id);
+  if (!category) return res.status(404).json({ success: false, message: "Category not found" });
 
-// Update category
-export const updateCategory = async (req, res) => {
-  try {
-    const category = await Category.findByPk(req.params.id);
-    if (!category) return res.status(404).json({ message: "Category not found" });
+  const { error, value } = createCategorySchema.validate(req.body);
+  if (error) return res.status(400).json({ success: false, message: error.message });
 
-    await category.update(req.body);
-    res.json(category);
-  } catch (error) {
-    console.error("Error updating category:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-};
+  await category.update(value);
+  res.json({ success: true, data: category });
+});
 
-// Delete category
-export const deleteCategory = async (req, res) => {
-  try {
-    const category = await Category.findByPk(req.params.id);
-    if (!category) return res.status(404).json({ message: "Category not found" });
+// Delete category (admin)
+export const deleteCategory = asyncHandler(async (req, res) => {
+  const category = await Category.findByPk(req.params.id);
+  if (!category) return res.status(404).json({ success: false, message: "Category not found" });
 
-    await category.destroy();
-    res.json({ message: "Category deleted successfully" });
-  } catch (error) {
-    console.error("Error deleting category:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-};
+  await category.destroy();
+  res.json({ success: true, message: "Category deleted" });
+});
