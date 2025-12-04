@@ -3,7 +3,6 @@ import { Category, Product } from "../models/index.js";
 import { asyncHandler } from "../middleware/errorMiddleware.js";
 import { createCategorySchema } from "../validators/productValidator.js";
 
-// Create category (admin)
 export const createCategory = asyncHandler(async (req, res) => {
   const { error, value } = createCategorySchema.validate(req.body);
   if (error) return res.status(400).json({ success: false, message: error.message });
@@ -14,7 +13,6 @@ export const createCategory = asyncHandler(async (req, res) => {
   const category = await Category.create(value);
   res.status(201).json({ success: true, data: category });
 });
-
 // Get all categories (public)
 export const getCategories = asyncHandler(async (req, res) => {
   const categories = await Category.findAll({

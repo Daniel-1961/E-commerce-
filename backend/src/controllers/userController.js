@@ -5,6 +5,11 @@ import { asyncHandler } from "../middleware/errorMiddleware.js";
 import { updateProfileSchema, addressSchema } from "../validators/userValidator.js";
 
 // Update profile (PUT /api/users/me)
+export const getUserProfile=asyncHandler(async(req,res)=>{
+  const user = await User.findByPk(req.user.id);
+  if (!user) return res.status(404).json({ success: false, message: "User not found" });
+   res.json({ success: true, message: "user Profile", data: user });
+});
 export const updateProfile = asyncHandler(async (req, res) => {
   const { error, value } = updateProfileSchema.validate(req.body);
   if (error) return res.status(400).json({ success: false, message: error.message });
