@@ -1,0 +1,95 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Basic Wireless Headphones",
+      "description": "Comfortable, 20h battery life, soft ear cushions.",
+      "price": 49.99,
+      "stock": 20,
+      "category_id": 1,
+      "images": ["https://images.unsplash.com/photo-1518444023946-7d588b5a2d72?w=1200&q=80&auto=format&fit=crop"]
+    },
+    {
+      "id": 2,
+      "name": "Noise Cancelling Headphones Pro",
+      "description": "Active noise cancelling, premium sound.",
+      "price": 199.99,
+      "stock": 8,
+      "category_id": 1,
+      "images": ["https://images.unsplash.com/photo-1518444023946-2b8fadf7f6a5?w=1200&q=80&auto=format&fit=crop"]
+    },
+    {
+      "id": 3,
+      "name": "USB-C Fast Charger 30W",
+      "description": "Compact fast charger for phones and tablets.",
+      "price": 19.99,
+      "stock": 50,
+      "category_id": 2,
+      "images": ["https://images.unsplash.com/photo-1585386959984-a415522c69f4?w=1200&q=80&auto=format&fit=crop"]
+    },
+    {
+      "id": 4,
+      "name": "Wireless Charging Pad",
+      "description": "Qi-certified charging pad, slim profile.",
+      "price": 29.99,
+      "stock": 35,
+      "category_id": 2,
+      "images": ["https://images.unsplash.com/photo-1545239351-1141bd82e8a6?w=1200&q=80&auto=format&fit=crop"]
+    },
+    {
+      "id": 5,
+      "name": "Leather Cable Organizer",
+      "description": "Keep your cables neat. Small and durable.",
+      "price": 9.99,
+      "stock": 100,
+      "category_id": 3,
+      "images": ["https://images.unsplash.com/photo-1591012911200-7c0f2f4b7b0b?w=1200&q=80&auto=format&fit=crop"]
+    },
+    {
+      "id": 6,
+      "name": "Smart Fitness Band",
+      "description": "Heart-rate monitor, step counter, 7-day battery.",
+      "price": 59.99,
+      "stock": 14,
+      "category_id": 4,
+      "images": ["https://images.unsplash.com/photo-1519741492707-3f5d3a2c6c32?w=1200&q=80&auto=format&fit=crop"]
+    },
+    {
+      "id": 7,
+      "name": "Portable Bluetooth Speaker",
+      "description": "Water-resistant, 12h playtime, compact size.",
+      "price": 39.99,
+      "stock": 25,
+      "category_id": 1,
+      "images": ["https://images.unsplash.com/photo-1509099836639-18ba1a44b0a5?w=1200&q=80&auto=format&fit=crop"]
+    },
+    {
+      "id": 8,
+      "name": "Multi-Port USB Charger 60W",
+      "description": "Charge multiple devices at once.",
+      "price": 49.99,
+      "stock": 12,
+      "category_id": 2,
+      "images": ["https://images.unsplash.com/photo-1590487987616-0f5d8f5c1d3a?w=1200&q=80&auto=format&fit=crop"]
+    },
+     {
+      "id": 9,
+      "name": "Basic Wireless Headphones",
+      "description": "Comfortable, long battery life.",
+      "price": 49.99,
+      "stock": 20,
+      "category_id": 1,
+      "images": ["https://via.placeholder.com/600x400?text=headphones"]
+    },
+    {
+      "id": 10,
+      "name": "USB-C Charger",
+      "description": "Fast charging 30W.",
+      "price": 19.99,
+      "stock": 50,
+      "category_id": 2,
+      "images": ["https://via.placeholder.com/600x400?text=charger"]
+    }
+
+  ]
+}
