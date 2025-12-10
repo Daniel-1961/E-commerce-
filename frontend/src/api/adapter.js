@@ -58,4 +58,20 @@ export async function login(body) {
     body: JSON.stringify(body)
   });
   return await res.json();
+
 }
+// add at bottom of src/api/adapter.js (or update existing file)
+export async function register(body) {
+  if (USE_MOCKS) {
+    const json = await import("../mock/auth-register.json");
+    await sleep(200);
+    return json.default; // shape { data: { user, token } }
+  }
+  const res = await fetch(`${import.meta.env.VITE_API_BASE}/auth/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+  return await res.json();
+}
+
