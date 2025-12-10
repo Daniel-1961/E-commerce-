@@ -7,7 +7,7 @@
       "price": 49.99,
       "stock": 20,
       "category_id": 1,
-      "images": ["https://images.unsplash.com/photo-1518444023946-7d588b5a2d72?w=1200&q=80&auto=format&fit=crop"]
+      "images": ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"]
     },
     {
       "id": 2,
@@ -16,7 +16,7 @@
       "price": 199.99,
       "stock": 8,
       "category_id": 1,
-      "images": ["https://images.unsplash.com/photo-1518444023946-2b8fadf7f6a5?w=1200&q=80&auto=format&fit=crop"]
+      "images": ["https://images.unsplash.com/photo-1654588834373-c61d62e6819b?w=600&auto=format&fit=crop"]
     },
     {
       "id": 3,
@@ -25,7 +25,7 @@
       "price": 19.99,
       "stock": 50,
       "category_id": 2,
-      "images": ["https://images.unsplash.com/photo-1585386959984-a415522c69f4?w=1200&q=80&auto=format&fit=crop"]
+      "images": ["https://images.unsplash.com/photo-1636015856875-00ce4b89433d?w=1200&auto=format&fit=crop"]
     },
     {
       "id": 4,
@@ -34,7 +34,7 @@
       "price": 29.99,
       "stock": 35,
       "category_id": 2,
-      "images": ["https://images.unsplash.com/photo-1545239351-1141bd82e8a6?w=1200&q=80&auto=format&fit=crop"]
+      "images": ["https://images.unsplash.com/photo-1627850369815-9ac978e5ffb7?q=80&w=1932&auto=format&fit=crop"]
     },
     {
       "id": 5,
@@ -43,7 +43,7 @@
       "price": 9.99,
       "stock": 100,
       "category_id": 3,
-      "images": ["https://images.unsplash.com/photo-1591012911200-7c0f2f4b7b0b?w=1200&q=80&auto=format&fit=crop"]
+      "images": ["https://images.unsplash.com/photo-1595756630797-e3c9ee1a9002?w=1200&auto=format&fit=crop"]
     },
     {
       "id": 6,
@@ -52,7 +52,7 @@
       "price": 59.99,
       "stock": 14,
       "category_id": 4,
-      "images": ["https://images.unsplash.com/photo-1519741492707-3f5d3a2c6c32?w=1200&q=80&auto=format&fit=crop"]
+      "images": ["https://plus.unsplash.com/premium_photo-1681433383783-661b519b154a?w=1200&auto=format&fit=crop"]
     },
     {
       "id": 7,
@@ -61,7 +61,7 @@
       "price": 39.99,
       "stock": 25,
       "category_id": 1,
-      "images": ["https://images.unsplash.com/photo-1509099836639-18ba1a44b0a5?w=1200&q=80&auto=format&fit=crop"]
+      "images": ["https://images.unsplash.com/photo-1674303324806-7018a739ed11?w=1200&auto=format&fit=cro"]
     },
     {
       "id": 8,
@@ -70,7 +70,7 @@
       "price": 49.99,
       "stock": 12,
       "category_id": 2,
-      "images": ["https://images.unsplash.com/photo-1590487987616-0f5d8f5c1d3a?w=1200&q=80&auto=format&fit=crop"]
+      "images": ["https://plus.unsplash.com/premium_photo-1760706403194-ee213aa9b323?w=1200&auto=format&fit=crop"]
     },
      {
       "id": 9,
@@ -79,7 +79,7 @@
       "price": 49.99,
       "stock": 20,
       "category_id": 1,
-      "images": ["https://via.placeholder.com/600x400?text=headphones"]
+      "images": ["https://plus.unsplash.com/premium_photo-1677158265072-5d15db9e23b2?w=1200&auto=format&fit=crop"]
     },
     {
       "id": 10,
@@ -88,7 +88,7 @@
       "price": 19.99,
       "stock": 50,
       "category_id": 2,
-      "images": ["https://via.placeholder.com/600x400?text=charger"]
+      "images": ["https://plus.unsplash.com/premium_photo-1760502350698-33e058bcde22?w=600&auto=format&fit=crop"]
     }
 
   ]
