@@ -63,7 +63,7 @@ export async function login(body) {
 // add at bottom of src/api/adapter.js (or update existing file)
 export async function register(body) {
   if (USE_MOCKS) {
-    const json = await import("../mock/auth-register.json");
+    const json = await import("../mock/auth-login.json");
     await sleep(200);
     return json.default; // shape { data: { user, token } }
   }

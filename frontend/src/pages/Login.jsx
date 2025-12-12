@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { login as adapterLogin } from "../api/adapter";
 import { validateLogin } from "../utils/validators";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../contexts/AuthContexts";
 import { useNavigate, useLocation } from "react-router-dom";
 
 export default function Login() {

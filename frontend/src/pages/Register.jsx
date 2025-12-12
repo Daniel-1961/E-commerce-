@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { register } from "../api/adapter";
 import { validateRegister } from "../utils/validators";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../contexts/AuthContexts";
 import { useNavigate } from "react-router-dom";
 
 export default function Register() {
