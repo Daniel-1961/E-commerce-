@@ -1,37 +1,63 @@
 // src/pages/Login.jsx
 import React, { useState } from "react";
-import { login as adapterLogin } from "../api/adapter";
-import { validateLogin } from "../utils/validators";
-import { useAuth } from "../contexts/AuthContexts";
 import { useNavigate, useLocation } from "react-router-dom";
+import { login as adapterLogin } from "../api/adapter"; // your adapter function
+import { useAuth } from "../contexts/AuthContexts";   
+
+// your AuthContext hook
 
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuth();
+  const { login: authLogin } = useAuth(); // function to persist user+token and update app state
 
-  const [form, setForm] = useState({ email: "", password: "" });
+  // form state
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  // UI state
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState("");
 
-  const onChange = (e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  // If a protected route redirected user to /login, it may set `state.from`
+  // After successful login we will redirect to that page (common UX)
+  const from = location.state?.from?.pathname || "/";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
-    const err = validateLogin(form);
-    if (err) { setError(err); return; }
+    setError("");
+
+    // basic client-side validation (fast feedback)
+    if (!email.trim() || !password.trim()) {
+      setError("Please enter email and password.");
+      return;
+    }
 
     setLoading(true);
+
     try {
-      const res = await adapterLogin(form);
-      const payload = res.data;
-      if (!payload || !payload.user || !payload.token) throw new Error("Invalid server response");
-      login(payload.user, payload.token);
-      // redirect back to intended page or home
-      const to = location.state?.from?.pathname || "/";
-      navigate(to, { replace: true });
+      // call the adapter (this will use the mock when VITE_USE_MOCKS=true)
+      const res = await adapterLogin({ email, password });
+
+      // adapter returns shape like: { data: { user, token } } for the mock
+      // be defensive: check path where data may be placed
+      const payload = res?.data ?? res; // if adapter returns { data: {...} } or returns {...}
+      const user = payload?.user;
+      const token = payload?.token;
+
+      if (!user || !token) {
+        // helpful error if mock/real API returns unexpected shape
+        throw new Error("Login failed: invalid server response");
+      }
+
+      // persist user+token centrally using AuthContext
+      authLogin(user, token);
+
+      // redirect to the page the user wanted, or to home
+      navigate(from, { replace: true });
     } catch (err) {
+      // err might be a fetch/network error or a custom thrown error
+      // adapter mock won't throw on success; on real API you may have err.response
       const msg = err?.response?.data?.message || err?.message || "Login failed";
       setError(msg);
     } finally {
@@ -40,13 +66,35 @@ export default function Login() {
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white p-6 rounded shadow">
+    <div className="max-w-md mx-auto mt-16 p-6 bg-white rounded shadow">
       <h2 className="text-xl font-semibold mb-4">Login</h2>
-      {error && <div className="bg-red-50 text-red-700 p-2 mb-3 rounded">{error}</div>}
+
+      {error && <div className="mb-3 text-red-600">{error}</div>}
+
       <form onSubmit={handleSubmit} className="space-y-3">
-        <input name="email" value={form.email} onChange={onChange} placeholder="Email" className="w-full border rounded px-3 py-2" />
-        <input name="password" type="password" value={form.password} onChange={onChange} placeholder="Password" className="w-full border rounded px-3 py-2" />
-        <button disabled={loading} className="w-full bg-primary text-white py-2 rounded">
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          className="w-full border px-3 py-2 rounded"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          className="w-full border px-3 py-2 rounded"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-primary text-black py-2 rounded disabled:opacity-60"
+        >
           {loading ? "Logging in..." : "Login"}
         </button>
       </form>
