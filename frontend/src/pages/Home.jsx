@@ -1,6 +1,6 @@
 // src/pages/Home.jsx
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { getProducts } from "../api/adapter";
 import categoriesJson from "../mock/categories.json";
 
@@ -20,7 +20,7 @@ export default function Home() {
       try {
         const res = await getProducts({ q: urlQ, category_id: urlCategory || null });
         if (!mounted) return;
-        console.log(res);
+        //console.log(res);
         setProducts(res.data || []);
       } catch (err) {
         console.error("Failed to load products:", err);
@@ -46,6 +46,7 @@ export default function Home() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {products.length === 0 && <div className="text-muted">No products found.</div>}
           {products.map(p => (
+            <Link to={`/product/${p.id}`} className="hover:shadow-md">
             <div key={p.id} className="bg-white rounded shadow p-3 flex flex-col">
               <div className="h-40 mb-3 overflow-hidden rounded">
                 <img
@@ -65,7 +66,9 @@ export default function Home() {
               </div>
               <div className="text-xs text-muted mt-1">Category: {categories.find(c => c.id === p.category_id)?.name || "—"}</div>
             </div>
-          ))}
+            </Link>
+          ))
+          }
         </div>
       )}
     </div>

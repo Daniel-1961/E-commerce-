@@ -18,12 +18,7 @@ useEffect(() => {
   setSearchQ(urlQ);
 }, [categoryFromUrl,urlQ]);
 
-//auth context for login and logout
   const {user, logout } = useAuth();
-
-
-
-  // cart count from localStorage (simple for mocks)
   const [cartCount, setCartCount] = useState(0);
   useEffect(() => {
     const readCartCount = () => {
@@ -38,8 +33,6 @@ useEffect(() => {
       }
     };
     readCartCount();
-
-    // update when other tabs change cart or when code triggers a storage event
     const onStorage = (e) => {
       if (e.key === "cart") readCartCount();
     };
@@ -47,8 +40,6 @@ useEffect(() => {
     return () => window.removeEventListener("storage", onStorage);
   }, []);
 
-  // When user submits search, update URL so Home can react and fetch filtered results.
-  // We navigate to "/" with the query param. Using `navigate` keeps router history.
  const onSubmitSearch = (e) => {
   e.preventDefault();
 
@@ -62,9 +53,6 @@ useEffect(() => {
 
   navigate(`/?${params.toString()}`);
 };
-
-
-  // logout helper: call context logout then redirect to login page
   const handleLogout = () => {
     logout();
    // navigate("/login");
@@ -150,7 +138,7 @@ useEffect(() => {
             onChange={(e) => setSearchQ(e.target.value)}
             className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <button type="submit" className="px-3 py-2 bg-primary text-white rounded">Go</button>
+          <button type="submit" className="px-3 py-2 bg-primary text-black rounded">Go</button>
         </form>
       </div>
     </nav>
