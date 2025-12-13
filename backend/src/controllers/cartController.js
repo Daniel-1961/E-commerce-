@@ -3,16 +3,6 @@ import { Cart, CartItem, Product } from "../models/index.js";
 import { asyncHandler } from "../middleware/errorMiddleware.js";
 import { addToCartSchema, updateCartItemSchema } from "../validators/cartValidator.js";
 import { Op } from "sequelize";
-
-/*
-Assumptions:
-- Cart model has: id, user_id, status ('active', 'ordered')
-- CartItem has: id, cart_id, product_id, quantity, unit_price (snapshot)
-- Product has: id, name, price, stock
-- All models exported from src/models/index.js
-*/
-
-// Helper: ensure active cart exists
 const findOrCreateActiveCart = async (userId) => {
   let cart = await Cart.findOne({ where: { user_id: userId, status: "active" } });
   if (!cart) {

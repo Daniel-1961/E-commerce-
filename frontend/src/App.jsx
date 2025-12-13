@@ -4,6 +4,7 @@ import Register from './pages/Register.jsx'
 import Login from './pages/Login.jsx'
 import Navbar from './components/Navbar.jsx'
 import ProductDetail from './pages/ProductDetail.jsx'
+import Cart from './pages/Cart.jsx'
 function App() {
   
 
@@ -16,6 +17,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/product/:id" element={<ProductDetail />} />
+        <Route path="/cart" element={<Cart />} />
        </Routes>
       
        
