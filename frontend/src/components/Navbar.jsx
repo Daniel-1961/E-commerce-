@@ -1,4 +1,3 @@
-// src/components/Navbar.jsx
 import React, { useEffect, useState } from "react";
 import { ShoppingCartIcon, HeartIcon, UserIcon } from "@heroicons/react/24/outline";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
@@ -55,7 +54,6 @@ useEffect(() => {
 };
   const handleLogout = () => {
     logout();
-   // navigate("/login");
   };
 
   return (
