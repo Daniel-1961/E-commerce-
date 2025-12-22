@@ -19,7 +19,7 @@ The backend is built using JavaScript (Node.js, Express), while the frontend is 
 
 ---
 
-## 📁 Repository Structure
+##  Repository Structure
 ```
 ├── backend/ # Backend server and API code
 │ ├── controllers/
@@ -30,4 +30,35 @@ The backend is built using JavaScript (Node.js, Express), while the frontend is 
 ├── .gitignore
 └── README.md
 ```
+
+---
+
+##  Features (Implemented / In Progress)
+
+### Implemented
+- User signup and login
+- Product CRUD (admin)
+- Public product listing
+- Cart data structure (pre-integration)
+- Backend routing and controllers
+
+### In Progress
+- Full backend-to-frontend integration
+- Authentication middleware enhancements
+- Order tracking and checkout workflows
+- API documentation (OpenAPI / Postman collection)
+- Unit and integration testing
+
+---
+
+##  Technologies Used
+
+| Layer | Technology | 
+|-------|------------|
+| Backend | Node.js, Express |
+| Database | Postgress| SeqeulizeORM|
+| Authentication | JWT |
+| Version Control | Git & GitHub |
+
+
 
