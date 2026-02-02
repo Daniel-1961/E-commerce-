@@ -1,4 +1,4 @@
-import { createContext,useState,useEffect } from "react";
+import { createContext,useState,useEffect, useContext } from "react";
 const CartContext=createContext(null);
 export function CartProvider({children}){
   const [cart,setCart]=useState(()=>{
@@ -25,10 +25,40 @@ const addToCart=(product)=>{
           item
       );
     } else{
-      return[...prev,{...product,quantity:product.quantity+1}];
-    }
-        
-        
+      return[...prev, {...product,quantity:product.quantity+1}];
+    }  
       })
     }
+
+  const updateQuantity = (itemId, quantity) => {
+    setCart((prev) => prev .map((item) => item.id === itemId ? 
+      {
+        ...item, quantity: Math.max(1, quantity) } : item ).filter((item) => item.quantity > 0) );
+        };
+  const removeItem = (itemId) => {
+    setCart((prev) => prev.filter((item) => item.id !== itemId));
+   };
+
+  const clearCart= ()=>setCart([]);
+  // derived totals 
+  const { totalItems, subtotal } = useMemo(() => { 
+    const totalItems = cart.reduce((sum, i) => sum + i.quantity, 0);
+     const subtotal = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
+      return { totalItems, subtotal }; }, [cart]);
+      const value={
+        cart,
+        addToCart,
+        updateQuantity,
+        removeItem,
+        clearCart,
+        totalItems,
+        subtotal
+      };
+
+      return <CartContext.Provider value={value}>{children}</CartContext.Provider>
+    }
+  export function useCart(){
+    const ctx=useContext(CartContext);
+    if(!ctx) throw new Error("useCart must be used within CartProvider");
+    return ctx;
   }
