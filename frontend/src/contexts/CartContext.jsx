@@ -42,9 +42,9 @@ const addToCart=(product)=>{
   const clearCart= ()=>setCart([]);
   // derived totals 
   const { totalItems, subtotal } = useMemo(() => { 
-    const totalItems = cart.reduce((sum, i) => sum + i.quantity, 0);
-     const subtotal = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
-      return { totalItems, subtotal }; }, [cart]);
+  const totalItems = cart.reduce((sum, i) => sum + i.quantity, 0);
+  const subtotal = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  return { totalItems, subtotal }; }, [cart]);
       const value={
         cart,
         addToCart,
