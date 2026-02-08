@@ -1,15 +1,7 @@
 
-// src/controllers/orderController.js
 import { sequelize, Order, OrderItem, Cart, CartItem, Product, Address } from "../models/index.js";
 import { asyncHandler } from "../middleware/errorMiddleware.js";
 import { createOrderSchema } from "../validators/orderValidator.js";
-
-/*
-Assumptions:
-- Order has: id, user_id, address_id, total, status ('pending','paid','shipped','delivered','cancelled'), payment_method, created_at
-- OrderItem has: id, order_id, product_id, quantity, price_at_purchase
-- Cart and CartItem exist as previous
-*/
 
 export const createOrder = asyncHandler(async (req, res) => {
   const userId = req.user.id;
