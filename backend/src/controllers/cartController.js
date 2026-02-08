@@ -1,4 +1,3 @@
-// src/controllers/cartController.js
 import { Cart, CartItem, Product } from "../models/index.js";
 import { asyncHandler } from "../middleware/errorMiddleware.js";
 import { addToCartSchema, updateCartItemSchema } from "../validators/cartValidator.js";
@@ -22,7 +21,6 @@ export const getMyCart = asyncHandler(async (req, res) => {
   if (!cart) {
     return res.json({ success: true, data: { items: [], subtotal: 0 } });
   }
-
   // calculate subtotal
   let subtotal = 0;
   const items = cart.CartItems.map(item => {
@@ -58,7 +56,6 @@ export const addToCart = asyncHandler(async (req, res) => {
   if (product.stock < quantity) {
     return res.status(400).json({ success: false, message: `Only ${product.stock} units available` });
   }
-
   // Ensure cart exists
   const cart = await findOrCreateActiveCart(userId);
 
@@ -128,7 +125,6 @@ export const removeCartItem = asyncHandler(async (req, res) => {
   res.json({ success: true, message: "Item removed" });
 });
 
-// DELETE /api/carts/clear
 export const clearCart = asyncHandler(async (req, res) => {
   const userId = req.user.id;
   const cart = await Cart.findOne({ where: { user_id: userId, status: "active" } });
