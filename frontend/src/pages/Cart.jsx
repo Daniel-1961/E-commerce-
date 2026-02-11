@@ -1,46 +1,41 @@
-import { useState,useEffect } from "react";
-export default function Cart(){
-    const [todos, setTodos]=useState([
-    {
-        id:1,
-        text:"data science project",
-        completed:false
-    },
+import { useCart } from "../contexts/CartContext";
 
-    {
-        id:2, 
-        text:"web dev't project", 
-        completed:true
-    }
+export default function Cart() {
+  const { cart, updateQuantity, removeItem, subtotal, totalItems } = useCart();
+  console.log(cart);
 
-]);
-useEffect(()=>{
-    console.log("initital todos:", todos),
-    [todos]
-})
+  return (
+    <div className="max-w-5xl mx-auto p-6">
+      <h1 className="text-2xl font-bold mb-6">Your Cart ({totalItems} items)</h1>
 
-const addTodo=(text)=>{
-    const newTodo={id:Date.now(), text, completed:false};
-    setTodos(prevTodos=>[...prevTodos,newTodo]);//save all the old and add the value;
-};
-return(
-    <div>
-        <h1>List of Todos</h1>
-     <button
-        onClick={()=>addTodo("c++ Project")}
-        >
-         Add Project
-        </button>
-        <ul>
-            {todos.map((items)=>(
-                <li key={items.id}>
-                   {items.text} - {items.completed ? "✅" : "❌"}
+      {cart.length === 0 ? (
+        <p>Your cart is empty.</p>
+      ) : (
+        <div>
+          {cart.map(item => (
+            <div key={item.id}
+             className="flex items-center gap-4 p-4 border rounded mb-4">
+              <img src={item.image} alt={item.name}
+               className="w-20 h-20 object-cover rounded" />
+              <div className="flex-1">
+                <div className="font-semibold">{item.name}</div>
+                <div>${item.price.toFixed(2)}</div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</button>
+                <span>{item.quantity}</span>
+                <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
+              </div>
+              <button onClick={() => removeItem(item.id)} className="text-red-600">Remove</button>
+            </div>
+          ))}
 
-                </li>
-
-           ) )}
-            
-        </ul>
+          <div className="mt-6 text-right">
+            <div className="text-lg font-semibold">Subtotal: ${subtotal.toFixed(2)}</div>
+            <button className="mt-4 px-6 py-2 text-black rounded">Checkout</button>
+          </div>
+        </div>
+      )}
     </div>
-);
+  );
 }

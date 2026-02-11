@@ -46,8 +46,8 @@ export default function Home() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {products.length === 0 && <div className="text-muted">No products found.</div>}
           {products.map(p => (
-            <Link to={`/product/${p.id}`} className="hover:shadow-md">
-            <div key={p.id} className="bg-white rounded shadow p-3 flex flex-col">
+            <Link key={p.id} to={`/product/${p.id}`} className="hover:shadow-md">
+            <div className="bg-white rounded shadow p-3 flex flex-col">
               <div className="h-40 mb-3 overflow-hidden rounded">
                 <img
                   src={p.images[0]}

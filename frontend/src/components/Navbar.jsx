@@ -3,6 +3,7 @@ import { ShoppingCartIcon, HeartIcon, UserIcon } from "@heroicons/react/24/outli
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import categoriesJson from "../mock/categories.json";
 import { useAuth } from "../contexts/AuthContexts";
+import { useCart } from "../contexts/CartContext";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -12,32 +13,15 @@ export default function Navbar() {
   const categoryFromUrl = searchParams.get("category") || "";
   const [searchCategory, setSearchCategory] = useState(categoryFromUrl);
 
+  const{ totalItems }=useCart();
+
+
 useEffect(() => {
   setSearchCategory(categoryFromUrl);
   setSearchQ(urlQ);
 }, [categoryFromUrl,urlQ]);
 
   const {user, logout } = useAuth();
-  const [cartCount, setCartCount] = useState(0);
-  useEffect(() => {
-    const readCartCount = () => {
-      try {
-        const raw = localStorage.getItem("cart");
-        if (!raw) return setCartCount(0);
-        const items = JSON.parse(raw);
-        const count = Array.isArray(items) ? items.reduce((s, it) => s + (it.quantity || 0), 0) : 0;
-        setCartCount(count);
-      } catch {
-        setCartCount(0);
-      }
-    };
-    readCartCount();
-    const onStorage = (e) => {
-      if (e.key === "cart") readCartCount();
-    };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
 
  const onSubmitSearch = (e) => {
   e.preventDefault();
@@ -101,7 +85,7 @@ useEffect(() => {
           <Link to="/cart" className="relative px-3 py-1 rounded hover:bg-gray-100">
             <ShoppingCartIcon className="w-7 h-7" />
             <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-              {cartCount}
+              {totalItems||0}
             </span>
           </Link>
 
