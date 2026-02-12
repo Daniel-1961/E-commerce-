@@ -2,11 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getProductById } from "../api/adapter";
 import categoriesJson from "../mock/categories.json"
+import {useCart} from "../contexts/CartContext"
 
-export default function ProductDetail(){
+export default function ProductDetail()
+{
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const categories = categoriesJson.data || [];
+  const {addToCart}=useCart();
 
   useEffect(()=>{
     (async()=>{
@@ -62,7 +65,19 @@ export default function ProductDetail(){
           </div>
 
         
-          <button className="px-6 py-3 bg-primary text-black rounded-2xl shadow hover: bg-dark opacity-90 transition">
+          <button 
+          className="px-6 py-3 bg-primary text-black rounded-2xl shadow hover: bg-dark opacity-90 transition"
+          onClick={()=>
+          addToCart({
+            id: product.id,
+            name: product.name,
+            price: Number(product.price),
+            image: product.images?.[0],
+            
+          })
+          
+        }
+      >
             Add to Cart
           </button>
         </div>

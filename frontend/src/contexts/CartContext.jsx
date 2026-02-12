@@ -1,5 +1,5 @@
-import { createContext,useState,useEffect, useContext } from "react";
-const CartContext=createContext(null);
+import { createContext,useState,useEffect, useContext,useMemo } from "react";
+const CartContext=createContext();
 export function CartProvider({children}){
   const [cart,setCart]=useState(()=>{
     try{
@@ -11,7 +11,7 @@ export function CartProvider({children}){
   });
 
   useEffect(()=>{
-    localStorage.setItem("cart",JSON.stringify(cart),
+    localStorage.setItem("cart", JSON.stringify(cart),
   [cart])
   });
   
@@ -25,7 +25,7 @@ const addToCart=(product)=>{
           item
       );
     } else{
-      return[...prev, {...product,quantity:product.quantity+1}];
+      return[...prev, {...product, quantity:1}];
     }  
       })
     }
@@ -42,11 +42,19 @@ const addToCart=(product)=>{
   const clearCart= ()=>setCart([]);
   // derived totals 
   const { totalItems, subtotal } = useMemo(() => { 
-  const totalItems = cart.reduce((sum, i) => sum + i.quantity, 0);
-  const subtotal = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
-  return { totalItems, subtotal }; }, [cart]);
-      const value={
+  const totalItems = cart.reduce((sum, i) => {
+    const quantity=Number(i.quantity);
+    return sum + quantity
+  }, 0);
+  const subtotal = cart.reduce((sum, i) =>{
+    const price=Number(i.price);
+    const quantity=Number(i.quantity);
+    return sum + price * quantity}, 0);
+  return { totalItems, subtotal }; }, [cart])
+
+  const value={
         cart,
+        setCart,
         addToCart,
         updateQuantity,
         removeItem,
@@ -55,8 +63,9 @@ const addToCart=(product)=>{
         subtotal
       };
 
-      return <CartContext.Provider value={value}>{children}</CartContext.Provider>
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>
     }
+
   export function useCart(){
     const ctx=useContext(CartContext);
     if(!ctx) throw new Error("useCart must be used within CartProvider");
