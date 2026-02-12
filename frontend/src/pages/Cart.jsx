@@ -1,8 +1,8 @@
 import { useCart } from "../contexts/CartContext";
-
+import { useNavigate } from "react-router-dom";
 export default function Cart() {
   const { cart, updateQuantity, removeItem, subtotal, totalItems } = useCart();
-  console.log(cart);
+  const navigate=useNavigate();
 
   return (
     <div className="max-w-5xl mx-auto p-6">
@@ -32,7 +32,12 @@ export default function Cart() {
 
           <div className="mt-6 text-right">
             <div className="text-lg font-semibold">Subtotal: ${subtotal.toFixed(2)}</div>
-            <button className="mt-4 px-6 py-2 text-black rounded">Checkout</button>
+            
+            <button className="mt-4 px-6 py-2 text-black rounded"
+            onClick={() => navigate("/checkout")}
+            >
+              Checkout
+              </button>
           </div>
         </div>
       )}
