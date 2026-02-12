@@ -45,33 +45,36 @@ export async function getProductById(id) {
   const res = await fetch(`${import.meta.env.VITE_API_BASE}/products/${id}`);
   return await res.json();
 }
-
+//login handler
 export async function login(body) {
-  if (USE_MOCKS) {
-    const json = await import("../mock/auth-login.json");
-    await sleep(200);
-    return json.default;
-  }
-  const res = await fetch(`${import.meta.env.VITE_API_BASE}/auth/login`, {
+ const res = await fetch(`${import.meta.env.VITE_API_BASE}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body)
   });
-  return await res.json();
+  const json = await res.json();
+  if(!json.success){
+    throw new Error(json.message||"Login failed");
+
+  }
+  return json.data;//{user,token};
 
 }
-// add at bottom of src/api/adapter.js (or update existing file)
+
+// src/api/adapter.js
 export async function register(body) {
-  if (USE_MOCKS) {
-    const json = await import("../mock/auth-login.json");
-    await sleep(200);
-    return json.default; // shape { data: { user, token } }
-  }
   const res = await fetch(`${import.meta.env.VITE_API_BASE}/auth/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
+    body: JSON.stringify(body),
   });
-  return await res.json();
+
+  // backend returns { success, message, data: { user, token } }
+  const json = await res.json();
+  if (!json.success) {
+    throw new Error(json.message || "Registration failed");
+  }
+  return json.data; // { user, token }
 }
+
 

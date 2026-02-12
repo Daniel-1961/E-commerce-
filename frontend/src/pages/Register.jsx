@@ -1,13 +1,12 @@
-// src/pages/Register.jsx
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { register as adapterRegister } from "../api/adapter"; // your adapter.register()
+import { register as adapterRegister } from "../api/adapter";
 import { useAuth } from "../contexts/AuthContexts";
 
 export default function Register() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login: authLogin } = useAuth(); // function from AuthContext
+  const { login: authLogin } = useAuth();
 
   // form state
   const [name, setName] = useState("");
@@ -19,14 +18,14 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // where to return after successful register (if redirected here)
+  // redirect target
   const from = location.state?.from?.pathname || "/";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    // simple client-side validation
+    // client-side validation
     if (!name.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
       setError("Please fill all fields.");
       return;
@@ -42,27 +41,16 @@ export default function Register() {
 
     setLoading(true);
     try {
-      // call adapter.register; adapter uses mock when VITE_USE_MOCKS=true
-      const res = await adapterRegister({ name, email, password });
+      // call backend via adapter
+      const { user, token } = await adapterRegister({ name, email, password });
 
-      // adapter mock returns shape like: { data: { user, token } }
-      const payload = res?.data ?? res;
-      const user = payload?.user;
-      const token = payload?.token;
-
-      if (!user || !token) {
-        throw new Error("Registration failed: invalid server response");
-      }
-
-      // persist auth (login user immediately after register)
+      // persist auth
       authLogin(user, token);
 
-      // redirect to where they came from
+      // redirect
       navigate(from, { replace: true });
     } catch (err) {
-      // show server-provided message when available
-      const msg = err?.response?.data?.message || err?.message || "Registration failed";
-      setError(msg);
+      setError(err.message || "Registration failed");
     } finally {
       setLoading(false);
     }
@@ -77,7 +65,6 @@ export default function Register() {
       <form onSubmit={handleSubmit} className="space-y-3">
         <input
           type="text"
-          name="name"
           placeholder="Full name"
           className="w-full border px-3 py-2 rounded"
           value={name}
@@ -86,7 +73,6 @@ export default function Register() {
 
         <input
           type="email"
-          name="email"
           placeholder="Email"
           className="w-full border px-3 py-2 rounded"
           value={email}
@@ -95,7 +81,6 @@ export default function Register() {
 
         <input
           type="password"
-          name="password"
           placeholder="Password"
           className="w-full border px-3 py-2 rounded"
           value={password}
@@ -104,7 +89,6 @@ export default function Register() {
 
         <input
           type="password"
-          name="confirmPassword"
           placeholder="Confirm password"
           className="w-full border px-3 py-2 rounded"
           value={confirmPassword}

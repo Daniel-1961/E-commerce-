@@ -9,9 +9,10 @@ import authRoutes from "./routes/authRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import { errorHandler } from "./middleware/errorMiddleware.js";
-
+import cors from "cors"
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 // Routes
 

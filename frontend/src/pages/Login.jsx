@@ -36,19 +36,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      // call the adapter (this will use the mock when VITE_USE_MOCKS=true)
-      const res = await adapterLogin({ email, password });
-
-      // adapter returns shape like: { data: { user, token } } for the mock
-      // be defensive: check path where data may be placed
-      const payload = res?.data ?? res; // if adapter returns { data: {...} } or returns {...}
-      const user = payload?.user;
-      const token = payload?.token;
-
-      if (!user || !token) {
-        // helpful error if mock/real API returns unexpected shape
-        throw new Error("Login failed: invalid server response");
-      }
+     const {user,token}=await adapterLogin({email,password});
 
       // persist user+token centrally using AuthContext
       authLogin(user, token);
@@ -56,9 +44,7 @@ export default function Login() {
       // redirect to the page the user wanted, or to home
       navigate(from, { replace: true });
     } catch (err) {
-      // err might be a fetch/network error or a custom thrown error
-      // adapter mock won't throw on success; on real API you may have err.response
-      const msg = err?.response?.data?.message || err?.message || "Login failed";
+      setError(err.message||"Login failed");
       setError(msg);
     } finally {
       setLoading(false);
