@@ -21,21 +21,26 @@ export function AuthProvider({ children }) {
 
   // On app load restore token + user
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const userJson = localStorage.getItem("user");
-    if (token && userJson) {
-      try {
-        const user = JSON.parse(userJson);
-        dispatch({ type: "LOGIN", payload: { user, token } });
-      } catch (e) {
-        localStorage.removeItem("user");
-        localStorage.removeItem("token");
-        dispatch({ type: "LOGOUT" });
-      }
-    } else {
-      dispatch({ type: "LOGOUT" });
+    const token=localStorage.getItem("token");
+    if(!token){
+      dispatch({type:"LOGOUT"});
+      return;
     }
+    fetch(`${import.meta.env.VITE_API_BASE}/auth/me`,{
+      header:{Authorization:`Bearer ${token}`},
+    })
+    .then(res=>res.json())
+    .then(data=>{
+      if(data.success){
+        dispatch({type:"LOGIN", payload:{user:data.data.user,token}});
+      }else{
+        logout();
+      }
+    })
+    .catch(()=>logout());
+  
   }, []);
+  
 
   // login helper: save to storage + context
   const login = (user, token) => {
