@@ -8,6 +8,7 @@ import {
   clearCart,
 } from "../api/cartAdapter";
 import { useAuth } from "./AuthContexts";
+import { useNavigate } from "react-router-dom";
 
 const CartContext = createContext();
 
@@ -15,12 +16,13 @@ export function CartProvider({ children }) {
   const { token } = useAuth(); // get JWT from AuthContext
   const [cart, setCart] = useState([]);
   const [subtotal, setSubtotal] = useState(0);
-
+  const navigate = useNavigate();
   // Load cart from backend on mount
   useEffect(() => {
     if (!token) {
-      setCart([]);
-      setSubtotal(0);
+      //setCart([]);
+      //setSubtotal(0);
+      navigate("/login")
       return;
     }
     (async () => {
@@ -39,7 +41,7 @@ export function CartProvider({ children }) {
 
   // Actions
   const addItem = async (productId, quantity = 1) => {
-    if (!token) return;
+    if (!token) return navigate("/login");
     await addToCart(token, productId, quantity);
     const data = await getMyCart(token);
     refreshCart(data);
