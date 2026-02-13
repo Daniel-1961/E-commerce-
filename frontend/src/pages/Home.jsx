@@ -13,24 +13,34 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const categories = categoriesJson.data || [];
 
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      setLoading(true);
-      try {
-        const res = await getProducts({ q: urlQ, category_id: urlCategory || null });
-        if (!mounted) return;
-        //console.log(res);
-        setProducts(res.data || []);
-      } catch (err) {
-        console.error("Failed to load products:", err);
-        if (mounted) setProducts([]);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    })();
-    return () => { mounted = false; };
-  }, [urlQ, urlCategory]);
+useEffect(() => {
+  let mounted = true;
+  (async () => {
+    setLoading(true);
+    try {
+      const res = await getProducts({ q: urlQ, category_id: urlCategory || null });
+      if (!mounted) return;
+
+      // Normalize backend response
+      const normalized = res.data.map(p => ({
+        ...p,
+        images: p.ProductImages?.map(img => img.image_url) || [],
+        category_id: p.Category?.id,
+        category_name: p.Category?.name,
+      }));
+    console.log(normalized);
+      setProducts(normalized);
+      
+    } catch (err) {
+      console.error("Failed to load products:", err);
+      if (mounted) setProducts([]);
+    } finally {
+      if (mounted) setLoading(false);
+    }
+  })();
+  return () => { mounted = false; };
+}, [urlQ, urlCategory]);
+
 
   return (
     <div>
@@ -61,10 +71,10 @@ export default function Home() {
                 <div className="text-xs text-muted mb-2">{p.description}</div>
               </div>
               <div className="mt-2 flex items-center justify-between">
-                <div className="font-bold">${p.price.toFixed(2)}</div>
+                <div className="font-bold">${Number(p.price)}</div>
                 <div className="text-xs text-muted">Stock: {p.stock}</div>
               </div>
-              <div className="text-xs text-muted mt-1">Category: {categories.find(c => c.id === p.category_id)?.name || "—"}</div>
+              <div className="text-xs text-muted mt-1">Category: {p.category_name || "—"}</div>
             </div>
             </Link>
           ))

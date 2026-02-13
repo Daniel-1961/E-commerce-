@@ -4,7 +4,7 @@ const USE_MOCKS = import.meta.env.VITE_USE_MOCKS === "true";
 // simulate small network delay
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-export async function getProducts({ q = "", category_id = null, page = 1, limit = 12 } = {}) {
+/*export async function getProducts({ q = "", category_id = null, page = 1, limit = 12 } = {}) {
   if (USE_MOCKS) {
     const json = await import("../mock/products.json");
     await sleep(250);
@@ -33,9 +33,30 @@ export async function getProducts({ q = "", category_id = null, page = 1, limit 
   const res = await fetch(url);
   const data = await res.json();
   return data;
+}*/
+
+// src/api/adapter.js
+export async function getProducts(params = {}) {
+  const query = new URLSearchParams();
+
+  if (params.q) query.append("q", params.q);
+  if (params.category_id) query.append("category_id", params.category_id);
+  if (params.page) query.append("page", params.page);
+  if (params.limit) query.append("limit", params.limit);
+  if (params.min_price) query.append("min_price", params.min_price);
+  if (params.max_price) query.append("max_price", params.max_price);
+
+  const res = await fetch(`${import.meta.env.VITE_API_BASE}/products?${query.toString()}`);
+  const json = await res.json();
+
+  if (!json.success) {
+    throw new Error(json.message || "Failed to fetch products");
+  }
+
+  return json; // { success, meta, data }
 }
 
-export async function getProductById(id) {
+/*export async function getProductById(id) {
   if (USE_MOCKS) {
     const json = await import("../mock/products.json");
     await sleep(150);
@@ -45,6 +66,19 @@ export async function getProductById(id) {
   const res = await fetch(`${import.meta.env.VITE_API_BASE}/products/${id}`);
   return await res.json();
 }
+  */
+// src/api/adapter.js
+export async function getProductById(id) {
+  const res = await fetch(`${import.meta.env.VITE_API_BASE}/products/${id}`);
+  const json = await res.json();
+
+  if (!json.success) {
+    throw new Error(json.message || "Failed to fetch product");
+  }
+
+  return json.data; // single product object
+}
+
 //login handler
 export async function login(body) {
  const res = await fetch(`${import.meta.env.VITE_API_BASE}/auth/login`, {
