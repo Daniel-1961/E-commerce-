@@ -1,10 +1,11 @@
-// src/pages/ProductDetail.jsx
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getProductById } from "../api/adapter";
+import { useCart } from "../contexts/CartContext";
 
 export default function ProductDetail() {
   const { id } = useParams();
+  const { addItem } = useCart(); // from CartContext
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -15,16 +16,12 @@ export default function ProductDetail() {
       setLoading(true);
       try {
         const res = await getProductById(id);
-
-        // Normalize backend response
         const normalized = {
           ...res,
-          price:Number(res.price),
           images: res.ProductImages?.map(img => img.image_url) || [],
           category_id: res.Category?.id,
           category_name: res.Category?.name,
         };
-
         if (mounted) setProduct(normalized);
       } catch (err) {
         if (mounted) setError(err.message || "Failed to load product");
@@ -57,9 +54,17 @@ export default function ProductDetail() {
         </div>
         <div className="flex-1">
           <p className="mb-2">{product.description}</p>
-          <p className="font-bold text-lg mb-2">${product.price.toFixed(2)}</p>
+          <p className="font-bold text-lg mb-2">${product.price}</p>
           <p className="text-sm text-muted mb-2">Stock: {product.stock}</p>
           <p className="text-sm text-muted">Category: {product.category_name || "—"}</p>
+
+          {/* Add to Cart button */}
+          <button
+            className="mt-4 px-6 py-2 bg-primary text-black rounded"
+            onClick={() => addItem(product.id, 1)}
+          >
+            Add to Cart
+          </button>
         </div>
       </div>
     </div>
