@@ -1,21 +1,41 @@
 import { useCart } from "../contexts/CartContext";
+import { useAuth } from "../contexts/AuthContexts";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-export default function OrderSummary() {
-  const { cart, subtotal, totalItems,clearCart } = useCart();
+import { createOrder } from "../api/orderAdapter";
+
+export default function OrderSummary({ addressId }) {
+  const { cart, subtotal, totalItems } = useCart();
+  const { token } = useAuth();
   const [paymentMethod, setPaymentMethod] = useState("");
-  const navigate=useNavigate();
-  const handlePlaceOrder = () => { 
-    if (!paymentMethod) { 
-        alert("Please select a payment method before placing your order."); 
-        return;    
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const handlePlaceOrder = async () => {
+    if (!addressId) {
+      setError("Please save your delivery address first.");
+      return;
     }
-    clearCart();
-    navigate("/order-confirmation", {state:{paymentMethod}})
-  }
+    if (!paymentMethod) {
+      setError("Please select a payment method.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const order = await createOrder(token, addressId, paymentMethod);
+      navigate("/order-confirmation", { state: { order } });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="border rounded p-6 bg-gray-50 shadow">
       <h2 className="text-lg font-semibold mb-4">Order Summary</h2>
+      {error && <div className="text-red-600 mb-2">{error}</div>}
 
       {cart.map(item => (
         <div key={item.id} className="flex justify-between mb-2">
@@ -31,30 +51,29 @@ export default function OrderSummary() {
         </div>
       </div>
 
-<div className="mt-4 space-y-2">
-     <h3 className="text-md font-semibold mb-2">Payment Method</h3>
-    <label className="flex items-center gap-2">
-        <input type="radio" name="payment" value="bank" checked={paymentMethod === "bank"} onChange={(e) => setPaymentMethod(e.target.value)}
-        />
-        Bank Transfer
-        </label>
+      <div className="mt-4 space-y-2">
+        <h3 className="text-md font-semibold mb-2">Payment Method</h3>
+        {["wallet", "cod", "card"].map(method => (
+          <label key={method} className="flex items-center gap-2">
+            <input
+              type="radio"
+              name="payment"
+              value={method}
+              checked={paymentMethod === method}
+              onChange={(e) => setPaymentMethod(e.target.value)}
+            />
+            {method}
+          </label>
+        ))}
+      </div>
 
-    <label className="flex items-center gap-2">
-        <input type="radio" name="payment" value="cod" checked={paymentMethod === "cod"} onChange={(e) => setPaymentMethod(e.target.value)}
-        />
-        Cash on Delivery
-        </label>
-
-    <label className="flex items-center gap-2">
-        <input type="radio" name="payment" value="paypal" checked={paymentMethod === "paypal"} onChange={(e) => setPaymentMethod(e.target.value)}
-        />
-        PayPal
-        </label>
-</div>
-<button className="mt-6 w-full bg-primary text-black py-2 rounded hover:opacity-90"
-onClick={handlePlaceOrder}>
-Place Order
-</button>
-</div>
+      <button
+        className="mt-6 w-full bg-primary text-black py-2 rounded hover:opacity-90"
+        onClick={handlePlaceOrder}
+        disabled={loading}
+      >
+        {loading ? "Placing Order..." : "Place Order"}
+      </button>
+    </div>
   );
 }
