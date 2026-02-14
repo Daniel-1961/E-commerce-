@@ -11,8 +11,7 @@ export default function Checkout() {
         <div>
           <BillingForm />
         </div>
-
-        {/* Right column: Order Summary */}
+        
         <div>
           <OrderSummary />
         </div>
