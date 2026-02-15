@@ -14,7 +14,7 @@ export async function createOrder(token, addressId, paymentMethod) {
 }
 
 export async function getMyOrders(token) {
-  const res = await fetch(`${import.meta.env.VITE_API_BASE}/orders/my-orders`, {
+  const res = await fetch(`${import.meta.env.VITE_API_BASE}/orders/my-order`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   const json = await res.json();

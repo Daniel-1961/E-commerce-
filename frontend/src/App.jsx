@@ -8,6 +8,7 @@ import ProductDetail from './pages/ProductDetail.jsx'
 import Cart from './pages/Cart.jsx'
 import Checkout from './pages/Checkout.jsx'
 import OrderConfirmation from './pages/OrderConfirmation.jsx'
+import OrderHistory from './pages/OrderHistory.jsx'
 function App() {
   
 
@@ -23,6 +24,7 @@ function App() {
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/order-confirmation" element={<OrderConfirmation />} />
+            <Route path="/orders" element={<OrderHistory />} />
         </Routes>
     </CartProvider>
        
