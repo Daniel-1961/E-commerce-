@@ -61,7 +61,7 @@ export const addToCart = asyncHandler(async (req, res) => {
 
   // If item exists, increment quantity (but cap at stock)
   let cartItem = await CartItem.findOne({ where: { cart_id: cart.id, product_id } });
-
+//Needs refarctoring the code 
   if (cartItem) {
     const newQty = cartItem.quantity + quantity;
     if (newQty > product.stock) {

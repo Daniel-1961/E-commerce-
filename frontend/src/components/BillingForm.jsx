@@ -1,52 +1,71 @@
-export default function BillingForm() {
+// src/components/BillingForm.jsx
+import { useState } from "react";
+import { useAuth } from "../contexts/AuthContexts";
+import { addAddress } from "../api/addressAdapter";
+
+export default function BillingForm({ onAddressSaved }) {
+  const { token } = useAuth();
+  const [form, setForm] = useState({ street: "", city: "", postal_code: "" });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!token) {
+      setError("You must be logged in to add an address.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const address = await addAddress(token, form);
+      onAddressSaved(address.id); // pass id up to Checkout
+      setError("");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="border rounded p-6 bg-white shadow">
-      <h2 className="text-lg font-semibold mb-4">Billing Details</h2>
-
-      <form className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium">First Name</label>
-          <input type="text" className="border rounded p-2 w-full" />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium">Last Name</label>
-          <input type="text" className="border rounded p-2 w-full" />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium">Email</label>
-          <input type="email" className="border rounded p-2 w-full" />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium">Phone</label>
-          <input type="tel" className="border rounded p-2 w-full" />
-        </div>
-
-        <h2 className="text-lg font-semibold mt-6 mb-4">Delivery Address</h2>
-
-        <div>
-          <label className="block text-sm font-medium">Street Address</label>
-          <input type="text" className="border rounded p-2 w-full" />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium">City</label>
-            <input type="text" className="border rounded p-2 w-full" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium">Zip Code</label>
-            <input type="text" className="border rounded p-2 w-full" />
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium">Country</label>
-          <input type="text" className="border rounded p-2 w-full" />
-        </div>
-      </form>
-    </div>
+    <form onSubmit={handleSubmit} className="space-y-4 border p-4 rounded bg-gray-50">
+      <h2 className="text-lg font-semibold">Billing / Delivery Address</h2>
+      {error && <div className="text-red-600">{error}</div>}
+      <input
+        type="text"
+        name="street"
+        placeholder="Street"
+        value={form.street}
+        onChange={handleChange}
+        className="w-full border p-2 rounded"
+      />
+      <input
+        type="text"
+        name="city"
+        placeholder="City"
+        value={form.city}
+        onChange={handleChange}
+        className="w-full border p-2 rounded"
+      />
+      <input
+        type="text"
+        name="postal_code"
+        placeholder="ZIP Code"
+        value={form.postal_code}
+        onChange={handleChange}
+        className="w-full border p-2 rounded"
+      />
+      <button
+        type="submit"
+        disabled={loading}
+        className="bg-primary text-black px-4 py-2 rounded"
+      >
+        {loading ? "Saving..." : "Save Address"}
+      </button>
+    </form>
   );
 }

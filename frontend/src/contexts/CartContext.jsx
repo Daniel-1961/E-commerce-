@@ -1,73 +1,108 @@
-import { createContext,useState,useEffect, useContext,useMemo } from "react";
-const CartContext=createContext();
-export function CartProvider({children}){
-  const [cart,setCart]=useState(()=>{
-    try{
-      const saved=localStorage.getItem("cart");
-      return saved?JSON.parse(saved):[];
-    }catch{
-      return [];
+// src/contexts/CartContext.jsx
+import { createContext, useContext, useEffect, useState, useMemo } from "react";
+import {
+  getMyCart,
+  addToCart,
+  updateCartItem,
+  removeCartItem,
+  clearCart,
+} from "../api/cartAdapter";
+import { useAuth } from "./AuthContexts";
+import { useNavigate } from "react-router-dom";
+
+const CartContext = createContext();
+
+export function CartProvider({ children }) {
+  const { token } = useAuth(); // get JWT from AuthContext
+  const [cart, setCart] = useState([]);
+  const [subtotal, setSubtotal] = useState(0);
+  const navigate = useNavigate();
+  // Load cart from backend on mount
+  useEffect(() => {
+    if (!token) {
+      //setCart([]);
+      //setSubtotal(0);
+      navigate("/login")
+      return;
     }
-  });
+    (async () => {
+      try {
+        const data = await getMyCart(token);
+         refreshCart(data);
+        setCart(normalized);
+        setSubtotal(data.subtotal);
+      } catch (err) {
+        console.error("Failed to load cart:", err);
+        setCart([]);
+        setSubtotal(0);
+      }
+    })();
+  }, [token]);
 
-  useEffect(()=>{
-    localStorage.setItem("cart", JSON.stringify(cart),
-  [cart])
-  });
-  
-const addToCart=(product)=>{
-  setCart((prev)=>{
-    const existing=prev.find(item=>item.id===product.id);
-    if(existing){
-      return prev.map(item=>
-        item.id===product.id?
-          {...item, quantity: item.quantity+1}:
-          item
-      );
-    } else{
-      return[...prev, {...product, quantity:1}];
-    }  
-      })
-    }
+  // Actions
+  const addItem = async (productId, quantity = 1) => {
+    if (!token) return navigate("/login");
+    await addToCart(token, productId, quantity);
+    const data = await getMyCart(token);
+    refreshCart(data);
+  };
 
-  const updateQuantity = (itemId, quantity) => {
-    setCart((prev) => prev .map((item) => item.id === itemId ? 
-      {
-        ...item, quantity: Math.max(1, quantity) } : item ).filter((item) => item.quantity > 0) );
-        };
-  const removeItem = (itemId) => {
-    setCart((prev) => prev.filter((item) => item.id !== itemId));
-   };
+  const updateQuantity = async (itemId, quantity) => {
+    if (!token) return;
+    await updateCartItem(token, itemId, quantity);
+    const data = await getMyCart(token);
+    refreshCart(data);
+  };
 
-  const clearCart= ()=>setCart([]);
-  // derived totals 
-  const { totalItems, subtotal } = useMemo(() => { 
-  const totalItems = cart.reduce((sum, i) => {
-    const quantity=Number(i.quantity);
-    return sum + quantity
-  }, 0);
-  const subtotal = cart.reduce((sum, i) =>{
-    const price=Number(i.price);
-    const quantity=Number(i.quantity);
-    return sum + price * quantity}, 0);
-  return { totalItems, subtotal }; }, [cart])
+  const removeItem = async (itemId) => {
+    if (!token) return;
+    await removeCartItem(token, itemId);
+    const data = await getMyCart(token);
+    refreshCart(data);
+  };
 
-  const value={
-        cart,
-        setCart,
-        addToCart,
-        updateQuantity,
-        removeItem,
-        clearCart,
-        totalItems,
-        subtotal
-      };
+  const clearAll = async () => {
+    if (!token) return;
+    await clearCart(token);
+    setCart([]);
+    setSubtotal(0);
+  };
 
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>
-    }
+  const refreshCart = (data) => {
+    const normalized = data.items.map((i) => ({
+      id: i.id,
+      name: i.product_name,
+      price: i.unit_price,
+      quantity: i.quantity,
+      image:
+        i.Product?.ProductImages?.[0]?.image_url ||
+        "https://via.placeholder.com/100?text=no+image",
+    }));
+    setCart(normalized);
+    setSubtotal(data.subtotal);
+  };
 
-  export function useCart(){
-    const ctx=useContext(CartContext);
-    if(!ctx) throw new Error("useCart must be used within CartProvider");
-    return ctx;
-  }
+  // Derived totals
+  const totalItems = useMemo(
+    () => cart.reduce((sum, i) => sum + i.quantity, 0),
+    [cart]
+  );
+
+  const value = {
+    cart,
+    subtotal,
+    totalItems,
+    addItem,
+    updateQuantity,
+    removeItem,
+    clearAll,
+  };
+
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+}
+
+export function useCart() {
+  const ctx = useContext(CartContext);
+  if (!ctx) throw new Error("useCart must be used within CartProvider");
+  return ctx;
+}
