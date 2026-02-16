@@ -9,6 +9,7 @@ import Cart from './pages/Cart.jsx'
 import Checkout from './pages/Checkout.jsx'
 import OrderConfirmation from './pages/OrderConfirmation.jsx'
 import OrderHistory from './pages/OrderHistory.jsx'
+import Profile from './pages/Profile.jsx'
 function App() {
   
 
@@ -25,6 +26,7 @@ function App() {
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/order-confirmation" element={<OrderConfirmation />} />
             <Route path="/orders" element={<OrderHistory />} />
+            <Route path="/profile" element={<Profile />} />
         </Routes>
     </CartProvider>
        

@@ -98,7 +98,9 @@ useEffect(() => {
           ) : (
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2 px-2 py-1 rounded hover:bg-gray-50">
+              <Link to="/profile" className="px-4 py-2 hover:underline"> 
                 <UserIcon className="w-5 h-5" />
+                </Link>
                 <span className="text-sm">Hi, <span className="font-semibold">{user.name}</span></span>
               </div>
               <button onClick={handleLogout} className="text-sm text-red-500">Logout</button>

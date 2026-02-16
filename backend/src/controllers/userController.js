@@ -17,12 +17,15 @@ export const updateProfile = asyncHandler(async (req, res) => {
   const user = await User.findByPk(req.user.id);
   if (!user) return res.status(404).json({ success: false, message: "User not found" });
 
-  // If updating password
-  if (req.body.password) {
-    if (typeof req.body.password !== "string" || req.body.password.length < 6) {
-      return res.status(400).json({ success: false, message: "Password must be >= 6 chars" });
-    }
-    user.password = await bcrypt.hash(req.body.password, 10);
+ if (req.body.currentPassword && req.body.newPassword) { 
+  const isMatch = await bcrypt.compare(req.body.currentPassword, user.password); 
+  if (!isMatch) { 
+    return res.status(400).json({ success: false, message: "Current password is incorrect" }); 
+}
+   if (req.body.newPassword.length < 6) { 
+    return res.status(400).json({ success: false, message: "New password must be >= 6 chars" });
+   }
+    user.password = await bcrypt.hash(req.body.newPasswordpassword, 10);
   }
   // Update optional fields
   if (value.name) user.name = value.name;
